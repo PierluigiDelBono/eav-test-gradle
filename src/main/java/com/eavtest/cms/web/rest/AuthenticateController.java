@@ -44,11 +44,11 @@ public class AuthenticateController {
     @Value("${jhipster.security.authentication.jwt.token-validity-in-seconds-for-remember-me:0}")
     private long tokenValidityInSecondsForRememberMe;
 
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final LdapAuthenticationProvider ldapAuthenticationProvider;
 
-    public AuthenticateController(JwtEncoder jwtEncoder, AuthenticationManagerBuilder authenticationManagerBuilder) {
+    public AuthenticateController(JwtEncoder jwtEncoder, LdapAuthenticationProvider ldapAuthenticationProvider) {
         this.jwtEncoder = jwtEncoder;
-        this.authenticationManagerBuilder = authenticationManagerBuilder;
+        this.ldapAuthenticationProvider = ldapAuthenticationProvider;
     }
 
     @PostMapping("/authenticate")
@@ -58,7 +58,7 @@ public class AuthenticateController {
             loginVM.getPassword()
         );
 
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        Authentication authentication = ldapAuthenticationProvider.authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = this.createToken(authentication, loginVM.isRememberMe());
         HttpHeaders httpHeaders = new HttpHeaders();
